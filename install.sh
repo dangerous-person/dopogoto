@@ -51,24 +51,15 @@ if [ "$OS" = "darwin" ]; then
 fi
 
 # Install binary
-if [ -w /usr/local/bin ]; then
-  INSTALL_DIR="/usr/local/bin"
+INSTALL_DIR="/usr/local/bin"
+if [ -w "$INSTALL_DIR" ]; then
+  mv "${TMPDIR}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
 else
-  INSTALL_DIR="${HOME}/.local/bin"
-  mkdir -p "$INSTALL_DIR"
+  echo "Installing to ${INSTALL_DIR} (requires sudo)..."
+  sudo mv "${TMPDIR}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
 fi
-
-mv "${TMPDIR}/${BINARY}" "${INSTALL_DIR}/${BINARY}"
 chmod +x "${INSTALL_DIR}/${BINARY}"
 
 echo ""
 echo "Installed ${BINARY} ${TAG} to ${INSTALL_DIR}/${BINARY}"
-
-if [ "$INSTALL_DIR" = "${HOME}/.local/bin" ]; then
-  case ":$PATH:" in
-    *":${INSTALL_DIR}:"*) ;;
-    *) echo "Add ${INSTALL_DIR} to your PATH: export PATH=\"${INSTALL_DIR}:\$PATH\"" ;;
-  esac
-fi
-
 echo "Run '${BINARY}' to start."
