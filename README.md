@@ -1,8 +1,8 @@
 # Dopo Goto
 
-Dopo Goto is a terminal-native audiovisual experience.
-15 albums. 30+ hours of music. Live chat.
-All in your command line.
+- Dopo Goto is a terminal-native audiovisual experience.
+- 15 albums. 30+ hours of music. Live chat.
+- All in your command line.
 
 Welcome to A Brand New World!
 
