@@ -25,7 +25,7 @@ Paste this into Claude Code, Codex, Cursor, or any AI agent with terminal access
 curl -fsSL https://raw.githubusercontent.com/dangerous-person/dopogoto/main/install.sh | sh
 ```
 
-3. If prompted, type your Mac password to allow install to `/usr/local/bin`.
+3. If prompted, type your Mac password to allow install to `/usr/local/bin`.<br>
    (No characters appear while typing. This is normal.)
 4. Start the app:
 
