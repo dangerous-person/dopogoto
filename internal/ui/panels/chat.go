@@ -7,12 +7,19 @@ import (
 	"github.com/dangerous-person/dopogoto/internal/chat"
 )
 
+// localMsg is a local-only message anchored to a position in the remote stream.
+type localMsg struct {
+	msg       chat.Message
+	afterRemote int // number of remote messages that existed when this was added
+}
+
 // Chat is the chat panel with message history and text input.
 type Chat struct {
 	Width    int
 	Height   int
 	Focused  bool
-	messages []chat.Message
+	remote   []chat.Message // from server (replaced on each refresh)
+	local    []localMsg     // local-only, anchored (survive refreshes)
 	input    string
 	offline  bool
 	scroll   int // scroll offset from bottom (0 = showing latest)
@@ -22,17 +29,42 @@ func NewChat() Chat {
 	return Chat{}
 }
 
-// SetMessages replaces the message list.
+// allMessages merges remote and local messages in chronological order.
+// Local messages are inserted after the remote messages that existed when they were added.
+func (c *Chat) allMessages() []chat.Message {
+	if len(c.local) == 0 {
+		return c.remote
+	}
+	msgs := make([]chat.Message, 0, len(c.remote)+len(c.local))
+	li := 0 // index into c.local
+	for ri, rm := range c.remote {
+		// Insert any local messages anchored at this position
+		for li < len(c.local) && c.local[li].afterRemote == ri {
+			msgs = append(msgs, c.local[li].msg)
+			li++
+		}
+		msgs = append(msgs, rm)
+	}
+	// Remaining locals anchored at or beyond end of remote
+	for li < len(c.local) {
+		msgs = append(msgs, c.local[li].msg)
+		li++
+	}
+	return msgs
+}
+
+// SetMessages replaces the remote message list. Local messages are preserved.
 func (c *Chat) SetMessages(msgs []chat.Message) {
-	c.messages = msgs
+	c.remote = msgs
 	c.scroll = 0
 }
 
 // AddLocalMessage inserts a local-only message (not sent to server).
+// Anchored after the current remote messages so later remotes appear after it.
 func (c *Chat) AddLocalMessage(name, text string) {
-	c.messages = append(c.messages, chat.Message{
-		Name: name,
-		Text: text,
+	c.local = append(c.local, localMsg{
+		msg:         chat.Message{Name: name, Text: text},
+		afterRemote: len(c.remote),
 	})
 }
 
@@ -66,7 +98,8 @@ func (c *Chat) ClearInput() string {
 
 // ScrollUp scrolls chat history up.
 func (c *Chat) ScrollUp() {
-	maxScroll := len(c.messages) - c.viewableLines()
+	total := len(c.remote) + len(c.local)
+	maxScroll := total - c.viewableLines()
 	if maxScroll < 0 {
 		maxScroll = 0
 	}
@@ -237,14 +270,15 @@ func (c Chat) renderMessages(maxW int) []string {
 		}
 	}
 
-	if len(c.messages) == 0 {
+	all := c.allMessages()
+	if len(all) == 0 {
 		return []string{
 			fmt.Sprintf("\x1b[38;5;%smNo messages yet\x1b[0m", t.ChatOffline),
 		}
 	}
 
 	var lines []string
-	for _, msg := range c.messages {
+	for _, msg := range all {
 		nameColor := t.ChatNameColor
 		textColor := t.TextColor
 

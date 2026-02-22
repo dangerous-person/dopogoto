@@ -2,13 +2,14 @@ package ui
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -70,6 +71,11 @@ type App struct {
 	// Telemetry
 	startTime    time.Time
 	tracksPlayed int
+
+	// Update notification
+	updateVersion string // set when API returns newer version
+	updateShown   bool   // true after messages shown in chat
+	chatLoaded    bool   // true after first SetMessages
 
 	// Too-small screen video
 	tsDec      *video.Decoder
@@ -172,6 +178,20 @@ func (a *App) sendEvent(event, props string) {
 	http.DefaultClient.Do(req)
 }
 
+// showUpdateIfReady adds update messages to chat once both conditions are met:
+// 1) update version is known, 2) chat history has loaded. Shows only once.
+func (a *App) showUpdateIfReady() {
+	if a.updateShown || a.updateVersion == "" || !a.chatLoaded {
+		return
+	}
+	a.updateShown = true
+
+	a.chat.AddLocalMessage("[update]",
+		"New version "+a.updateVersion+" is available.")
+	a.chat.AddLocalMessage("[update]",
+		"Update instructions: https://github.com/dangerous-person/dopogoto#updating")
+}
+
 func (a *App) checkForUpdate() tea.Cmd {
 	if a.version == "dev" || a.version == "" {
 		return nil
@@ -189,32 +209,67 @@ func (a *App) checkForUpdate() tea.Cmd {
 			return nil
 		}
 		defer resp.Body.Close()
-		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-		// Quick parse for "tag_name" without importing encoding/json
-		const key = `"tag_name":"`
-		idx := strings.Index(string(body), key)
-		if idx < 0 {
+
+		var release struct {
+			TagName string `json:"tag_name"`
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
 			return nil
 		}
-		start := idx + len(key)
-		end := strings.Index(string(body[start:]), `"`)
-		if end < 0 {
+		latest := release.TagName
+		if latest == "" || latest == a.version {
 			return nil
 		}
-		latest := string(body[start : start+end])
-		if latest != a.version && latest > a.version {
+		if semverNewer(latest, a.version) {
 			return updateAvailableMsg{Version: latest}
 		}
 		return nil
 	}
 }
 
+// semverNewer returns true if a is newer than b.
+// Expects "vMAJOR.MINOR.PATCH" format. Returns false on parse errors.
+func semverNewer(a, b string) bool {
+	pa := parseSemver(a)
+	pb := parseSemver(b)
+	if pa == nil || pb == nil {
+		return false
+	}
+	for i := 0; i < 3; i++ {
+		if pa[i] > pb[i] {
+			return true
+		}
+		if pa[i] < pb[i] {
+			return false
+		}
+	}
+	return false
+}
+
+// parseSemver parses "vMAJOR.MINOR.PATCH" into [3]int. Returns nil on failure.
+func parseSemver(s string) []int {
+	s = strings.TrimPrefix(s, "v")
+	parts := strings.Split(s, ".")
+	if len(parts) != 3 {
+		return nil
+	}
+	nums := make([]int, 3)
+	for i, p := range parts {
+		n, err := strconv.Atoi(p)
+		if err != nil {
+			return nil
+		}
+		nums[i] = n
+	}
+	return nums
+}
+
 func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	case updateAvailableMsg:
-		a.chat.AddLocalMessage("[update]",
-			msg.Version+" available — curl -fsSL .../install.sh | sh")
+		a.updateVersion = msg.Version
+		a.showUpdateIfReady()
 		return a, nil
 
 	case tickMsg:
@@ -262,6 +317,10 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case chat.NewMessagesMsg:
 		a.chat.SetMessages(msg.Messages)
 		a.chat.SetOffline(false)
+		if !a.chatLoaded {
+			a.chatLoaded = true
+			a.showUpdateIfReady()
+		}
 		return a, nil
 
 	case chat.ChatOfflineMsg:

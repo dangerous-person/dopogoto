@@ -10,6 +10,8 @@ Welcome to A Brand New World!
 
 ## Installation
 
+Already installed? See [Updating](#updating).
+
 ### Ask AI
 
 Paste this into Claude Code, Codex, Cursor, or any AI agent with terminal access:
@@ -33,22 +35,16 @@ curl -fsSL https://raw.githubusercontent.com/dangerous-person/dopogoto/main/inst
 dopogoto
 ```
 
-If Terminal says `command not found`, run:
+If Terminal says `command not found`, close Terminal, reopen it, and try `dopogoto` again.
 
-```sh
-/usr/local/bin/dopogoto
-```
+### macOS (manual install, if the command above doesn't work)
 
-Then close and reopen Terminal.
-
-### macOS (manual download)
-
-1. On [Releases](https://github.com/dangerous-person/dopogoto/releases), download the macOS file:
+1. Go to [Releases](https://github.com/dangerous-person/dopogoto/releases) and download the latest macOS file:
    `dopogoto_*_darwin_universal.tar.gz`
    (`darwin` means macOS, `universal` means it works on both Intel and Apple Silicon Macs).
 2. Open Downloads in Finder and double-click the `.tar.gz` file.
-   This creates a folder like `dopogoto_0.1.6_darwin_universal` containing the `dopogoto` app.
-3. In Terminal, run:
+   This creates a folder like `dopogoto_0.1.8_darwin_universal` containing the `dopogoto` app.
+3. Open Terminal and run:
 
 ```sh
 sudo mv ~/Downloads/dopogoto_*_darwin_universal/dopogoto /usr/local/bin/dopogoto
@@ -57,24 +53,24 @@ xattr -d com.apple.quarantine /usr/local/bin/dopogoto 2>/dev/null || true
 dopogoto
 ```
 
-Keep `*` exactly as shown (do not replace it). It automatically matches the version folder name.
+Keep `*` exactly as shown — it automatically matches the version folder name.
 
-If you have multiple `dopogoto_*_darwin_universal` folders in Downloads, use the exact one from Finder, for example:
-
-```sh
-sudo mv ~/Downloads/dopogoto_0.1.6_darwin_universal/dopogoto /usr/local/bin/dopogoto
-```
-
-### Linux
+If you have multiple `dopogoto_*_darwin_universal` folders in Downloads, use the newest one, for example:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dangerous-person/dopogoto/main/install.sh | sh
+sudo mv ~/Downloads/dopogoto_0.1.8_darwin_universal/dopogoto /usr/local/bin/dopogoto
 ```
 
 ### Windows
 
 1. Download `dopogoto_*_windows_amd64.zip` from [Releases](https://github.com/dangerous-person/dopogoto/releases)
 2. Extract, and run `dopogoto.exe`.
+
+### Linux
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dangerous-person/dopogoto/main/install.sh | sh
+```
 
 ### Build from source
 
@@ -94,6 +90,57 @@ go install github.com/dangerous-person/dopogoto@latest
 - Debian/Ubuntu: `sudo apt install libasound2-dev`
 - Fedora: `sudo dnf install alsa-lib-devel`
 - Arch: `sudo pacman -S alsa-lib`
+
+## Updating
+
+The app checks for updates on launch and shows a notification in chat when a new version is available.
+
+### macOS
+
+1. Quit dopogoto.
+2. Open Terminal (Command+Space, type Terminal, press Enter).
+3. Paste this command and press Enter (you can run it from any folder):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dangerous-person/dopogoto/main/install.sh | sh
+```
+
+4. If prompted, type your Mac password and press Enter.
+   No characters appear while typing — that's normal.
+5. Then type `dopogoto` and press Enter.
+
+### Windows
+
+1. Close dopogoto.
+2. Delete your old `dopogoto.exe` file.
+3. Go to [Releases](https://github.com/dangerous-person/dopogoto/releases) and download the latest `dopogoto_*_windows_amd64.zip`.
+4. Extract the ZIP and run the new `dopogoto.exe`.
+
+### Linux
+
+Quit dopogoto, then run:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dangerous-person/dopogoto/main/install.sh | sh
+```
+
+Then run `dopogoto` again.
+
+### If the version still looks old
+
+Check your version:
+
+```sh
+dopogoto --version
+```
+
+On macOS / Linux, check if you have duplicate copies:
+
+```sh
+which -a dopogoto
+```
+
+If more than one path appears, delete the old one and restart your terminal.
 
 ## Controls
 
@@ -120,7 +167,7 @@ Type a message and press Enter.
 
 ## Telemetry
 
-App sends a single anonymous ping on launch (version, OS) to help us understand usage. No personal info. No IP tracking.
+Anonymous usage stats on launch and quit (version, OS, session duration, terminal size). No personal info. No IP tracking.
 
 To opt out: `export DOPOGOTO_NO_TELEMETRY=1`
 
