@@ -45,8 +45,9 @@ func NewVideo(allData ...[]byte) (Video, error) {
 		clips:     clips,
 		renderers: renderers,
 	}
+	v.current = 0
 	v.shuffle()
-	v.pickClip()
+	v.startClip()
 
 	return v, nil
 }
@@ -63,6 +64,19 @@ func (v *Video) pickClip() {
 	v.current = v.order[v.orderIdx]
 	v.orderIdx++
 
+	v.frame = 0
+	v.tickAccum = 0
+
+	dec := v.clips[v.current]
+	fps := dec.FPS()
+	if fps <= 0 {
+		fps = 30
+	}
+	v.frameDur = 1.0 / float64(fps)
+	dec.ApplyFrame(0)
+}
+
+func (v *Video) startClip() {
 	v.frame = 0
 	v.tickAccum = 0
 

@@ -79,7 +79,7 @@ func (p *Player) InitSpeaker(sampleRate beep.SampleRate) error {
 	if p.initiated {
 		return nil
 	}
-	err := speaker.Init(sampleRate, sampleRate.N(time.Second/30))
+	err := speaker.Init(sampleRate, sampleRate.N(time.Second/10))
 	if err != nil {
 		return fmt.Errorf("speaker init: %w", err)
 	}

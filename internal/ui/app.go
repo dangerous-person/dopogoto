@@ -27,7 +27,7 @@ type updateAvailableMsg struct {
 	Version string
 }
 
-// tickMsg drives animation at ~30fps
+// tickMsg drives animation
 type tickMsg time.Time
 
 func tickCmd() tea.Cmd {
@@ -67,6 +67,10 @@ type App struct {
 
 	version string
 
+	// Telemetry
+	startTime    time.Time
+	tracksPlayed int
+
 	// Too-small screen video
 	tsDec      *video.Decoder
 	tsRen      *video.Renderer
@@ -76,7 +80,7 @@ type App struct {
 }
 
 func NewApp(version string) *App {
-	vid, err := panels.NewVideo(assets.Video001BR, assets.Video002BR, assets.Video003BR, assets.Video004BR, assets.Video005BR, assets.Video006BR, assets.Video007BR, assets.Video008BR, assets.Video009BR, assets.Video010BR, assets.Video011BR, assets.Video012BR, assets.Video013BR, assets.Video014BR, assets.Video015BR)
+	vid, err := panels.NewVideo(assets.Video001BR, assets.Video002BR, assets.Video003BR, assets.Video004BR, assets.Video005BR, assets.Video006BR, assets.Video007BR, assets.Video008BR, assets.Video009BR, assets.Video010BR, assets.Video011BR, assets.Video012BR, assets.Video013BR, assets.Video014BR, assets.Video015BR, assets.Video016BR, assets.Video017BR, assets.Video018BR, assets.Video019BR, assets.Video020BR, assets.Video021BR, assets.Video022BR, assets.Video023BR, assets.Video024BR, assets.Video025BR, assets.Video026BR, assets.Video027BR, assets.Video028BR)
 	if err != nil {
 		log.Printf("video init: %v", err)
 	}
@@ -101,6 +105,7 @@ func NewApp(version string) *App {
 		version:         version,
 		currentAlbumIdx: -1,
 		currentTrackIdx: -1,
+		startTime:       time.Now(),
 	}
 
 	// Too-small screen video
@@ -143,10 +148,22 @@ func (a *App) Init() tea.Cmd {
 }
 
 func (a *App) sendTelemetry() {
+	a.sendEvent("app_launched", fmt.Sprintf(`"version":"%s","os":"%s","arch":"%s"`,
+		a.version, runtime.GOOS, runtime.GOARCH))
+}
+
+func (a *App) sendSessionTelemetry() {
+	dur := int(time.Since(a.startTime).Seconds())
+	theme := panels.CurrentTheme().Name
+	a.sendEvent("app_session", fmt.Sprintf(`"duration_s":%d,"tracks_played":%d,"theme":"%s","terminal_w":%d,"terminal_h":%d`,
+		dur, a.tracksPlayed, theme, a.width, a.height))
+}
+
+func (a *App) sendEvent(event, props string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	body := fmt.Sprintf(`{"api_key":"phc_1S0EQGoWYuoCNLBOsBimJbrpWUbveQfafLCmLAxWBhw","event":"app_launched","distinct_id":"dopogoto-terminal","properties":{"version":"%s","os":"%s","arch":"%s"}}`,
-		a.version, runtime.GOOS, runtime.GOARCH)
+	body := fmt.Sprintf(`{"api_key":"phc_1S0EQGoWYuoCNLBOsBimJbrpWUbveQfafLCmLAxWBhw","event":"%s","distinct_id":"dopogoto-terminal","properties":{%s}}`,
+		event, props)
 	req, err := http.NewRequestWithContext(ctx, "POST", "https://us.i.posthog.com/capture/", strings.NewReader(body))
 	if err != nil {
 		return
@@ -212,6 +229,7 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return a, tickCmd()
 
 	case player.TrackStartedMsg:
+		a.tracksPlayed++
 		a.controls.State = panels.StatePlaying
 		a.controls.TrackTitle = msg.TrackTitle
 		a.controls.Duration = msg.Duration
@@ -316,6 +334,9 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if isQuit(msg) {
 			a.player.Close()
 			a.chatClient.Stop()
+			if os.Getenv("DOPOGOTO_NO_TELEMETRY") == "" {
+				a.sendSessionTelemetry()
+			}
 			return a, tea.Quit
 		}
 		switch msg.String() {
@@ -540,6 +561,9 @@ func (a *App) handleChatKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "ctrl+c":
 		a.player.Close()
 		a.chatClient.Stop()
+		if os.Getenv("DOPOGOTO_NO_TELEMETRY") == "" {
+			a.sendSessionTelemetry()
+		}
 		return a, tea.Quit
 	case "esc", "tab":
 		a.switchFocus()

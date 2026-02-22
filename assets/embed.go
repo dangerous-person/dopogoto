@@ -47,5 +47,44 @@ var Video014BR []byte
 //go:embed 015.json.br
 var Video015BR []byte
 
+//go:embed 016.json.br
+var Video016BR []byte
+
+//go:embed 017.json.br
+var Video017BR []byte
+
+//go:embed 018.json.br
+var Video018BR []byte
+
+//go:embed 019.json.br
+var Video019BR []byte
+
+//go:embed 020.json.br
+var Video020BR []byte
+
+//go:embed 021.json.br
+var Video021BR []byte
+
+//go:embed 022.json.br
+var Video022BR []byte
+
+//go:embed 023.json.br
+var Video023BR []byte
+
+//go:embed 024.json.br
+var Video024BR []byte
+
+//go:embed 025.json.br
+var Video025BR []byte
+
+//go:embed 026.json.br
+var Video026BR []byte
+
+//go:embed 027.json.br
+var Video027BR []byte
+
+//go:embed 028.json.br
+var Video028BR []byte
+
 //go:embed toosmall.json.br
 var TooSmallBR []byte
