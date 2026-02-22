@@ -18,9 +18,9 @@ Paste this into Claude Code, Codex, Cursor, or any AI agent with terminal access
 
 > Install dopogoto terminal music player from github.com/dangerous-person/dopogoto
 
-### macOS (recommended)
+### macOS
 
-1. Open **Terminal** (press `Command + Space`, type `Terminal`, press Enter).
+1. Open **Terminal**.
 2. Paste this command and press Enter:
 
 ```sh
