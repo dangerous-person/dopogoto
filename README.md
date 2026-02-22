@@ -1,9 +1,12 @@
 # Dopo Goto
 
-[Dopo Goto](https://dopogoto.com) terminal music and video player.
+Dopo Goto is a terminal-native audiovisual experience.
+15 albums. 30+ hours of music. Live chat.
+All in your command line.
 
-15 albums. 30+ hours of music.
-Live chat. All in your terminal.
+Welcome to A Brand New World!
+
+![Dopo Goto Preview](dopogoto-preview.gif)
 
 ## Installation
 
@@ -13,23 +16,65 @@ Paste this into Claude Code, Codex, Cursor, or any AI agent with terminal access
 
 > Install dopogoto terminal music player from github.com/dangerous-person/dopogoto
 
-### macOS & Linux
+### macOS (recommended)
+
+1. Open **Terminal** (press `Command + Space`, type `Terminal`, press Enter).
+2. Paste this command and press Enter:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dangerous-person/dopogoto/main/install.sh | sh
 ```
 
-Or download manually from [Releases](https://github.com/dangerous-person/dopogoto/releases).
-
-**macOS Gatekeeper:** If macOS blocks the binary, remove the quarantine attribute:
+3. If prompted, type your Mac password to allow install to `/usr/local/bin`.
+   (No characters appear while typing. This is normal.)
+4. Start the app:
 
 ```sh
-xattr -d com.apple.quarantine dopogoto
+dopogoto
+```
+
+If Terminal says `command not found`, run:
+
+```sh
+/usr/local/bin/dopogoto
+```
+
+Then close and reopen Terminal.
+
+### macOS (manual download)
+
+1. On [Releases](https://github.com/dangerous-person/dopogoto/releases), download the macOS file:
+   `dopogoto_*_darwin_universal.tar.gz`
+   (`darwin` means macOS, `universal` means it works on both Intel and Apple Silicon Macs).
+2. Open Downloads in Finder and double-click the `.tar.gz` file.
+   This creates a folder like `dopogoto_0.1.6_darwin_universal` containing the `dopogoto` app.
+3. In Terminal, run:
+
+```sh
+sudo mv ~/Downloads/dopogoto_*_darwin_universal/dopogoto /usr/local/bin/dopogoto
+sudo chmod +x /usr/local/bin/dopogoto
+xattr -d com.apple.quarantine /usr/local/bin/dopogoto 2>/dev/null || true
+dopogoto
+```
+
+Keep `*` exactly as shown (do not replace it). It automatically matches the version folder name.
+
+If you have multiple `dopogoto_*_darwin_universal` folders in Downloads, use the exact one from Finder, for example:
+
+```sh
+sudo mv ~/Downloads/dopogoto_0.1.6_darwin_universal/dopogoto /usr/local/bin/dopogoto
+```
+
+### Linux
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dangerous-person/dopogoto/main/install.sh | sh
 ```
 
 ### Windows
 
-Download `dopogoto_*_windows_amd64.zip` from [Releases](https://github.com/dangerous-person/dopogoto/releases), extract, and run `dopogoto.exe`.
+1. Download `dopogoto_*_windows_amd64.zip` from [Releases](https://github.com/dangerous-person/dopogoto/releases)
+2. Extract, and run `dopogoto.exe`.
 
 ### Build from source
 
