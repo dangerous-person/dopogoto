@@ -9,20 +9,20 @@ import (
 
 // localMsg is a local-only message anchored to a position in the remote stream.
 type localMsg struct {
-	msg       chat.Message
+	msg         chat.Message
 	afterRemote int // number of remote messages that existed when this was added
 }
 
 // Chat is the chat panel with message history and text input.
 type Chat struct {
-	Width    int
-	Height   int
-	Focused  bool
-	remote   []chat.Message // from server (replaced on each refresh)
-	local    []localMsg     // local-only, anchored (survive refreshes)
-	input    string
-	offline  bool
-	scroll   int // scroll offset from bottom (0 = showing latest)
+	Width   int
+	Height  int
+	Focused bool
+	remote  []chat.Message // from server (replaced on each refresh)
+	local   []localMsg     // local-only, anchored (survive refreshes)
+	input   string
+	offline bool
+	scroll  int // scroll offset from bottom (0 = showing latest)
 }
 
 func NewChat() Chat {
