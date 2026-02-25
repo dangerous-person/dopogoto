@@ -146,17 +146,17 @@ If more than one path appears, delete the old one and restart your terminal.
 
 | Key | Action |
 |-----|--------|
-| TAB | Cycle focus: Albums / Tracks / Chat |
-| UP/DOWN | Navigate lists |
-| ENTER | Play track or send chat message |
-| SPACE | Pause / resume |
-| N / P | Next / previous track |
-| +/- | Volume up / down |
-| S | Shuffle |
-| R | Repeat |
-| T | Change theme |
-| LEFT/RIGHT | Seek -/+ 10s |
-| Q | Quit |
+| `TAB` | Cycle focus: Albums / Tracks / Chat |
+| `↑` / `↓` | Navigate lists |
+| `ENTER` | Play track or send chat message |
+| `SPACE` | Pause / resume |
+| `N` / `P` | Next / previous track |
+| `+` / `-` | Volume up / down |
+| `S` | Shuffle |
+| `R` | Repeat |
+| `T` | Change theme |
+| `←`/`→` | Seek -/+ 10s |
+| `Q` | Quit |
 
 ## Chat
 
