@@ -401,6 +401,10 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "tab":
 			a.switchFocus()
+		case "g":
+			a.navigateTop()
+		case "G":
+			a.navigateBottom()
 		case "up", "k":
 			a.navigateUp()
 		case "down", "j":
@@ -626,6 +630,10 @@ func (a *App) handleChatKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return a, tea.Quit
 	case "esc", "tab":
 		a.switchFocus()
+	case "ctrl+u":
+		a.chat.ScrollToTop()
+	case "ctrl+d":
+		a.chat.ScrollToBottom()
 	case "enter":
 		text := a.chat.ClearInput()
 		if text != "" {
@@ -714,6 +722,26 @@ func (a *App) navigateDown() {
 	}
 }
 
+func (a *App) navigateTop() {
+	switch a.focus {
+	case focusAlbums:
+		a.albumList.Top()
+		a.syncTracks()
+	case focusTracks:
+		a.trackList.Top()
+	}
+}
+
+func (a *App) navigateBottom() {
+	switch a.focus {
+	case focusAlbums:
+		a.albumList.Bottom()
+		a.syncTracks()
+	case focusTracks:
+		a.trackList.Bottom()
+	}
+}
+
 func (a *App) syncTracks() {
 	if sel := a.albumList.SelectedAlbum(); sel != nil {
 		a.trackList.SetAlbum(sel)
@@ -755,7 +783,9 @@ func (a *App) renderHelpBar() string {
 		repeatStr = fmt.Sprintf("\x1b[38;5;%sm[\x1b[38;5;%smR\x1b[38;5;%sm] \x1b[38;5;%smREPEAT\x1b[0m", br, ky, br, lb)
 	}
 
+	verStr := fmt.Sprintf("\x1b[38;5;%smv%s\x1b[0m", t.FadeColor, a.version)
 	left := " " + strings.Join([]string{
+		verStr,
 		key("TAB", fmt.Sprintf("\x1b[38;5;%smSWITCH", lb)),
 		key("ENTER", fmt.Sprintf("\x1b[38;5;%smPLAY", lb)),
 		key("SPACE", a.pauseLabel()),

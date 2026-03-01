@@ -56,6 +56,23 @@ func (t *TrackList) Down() {
 	}
 }
 
+func (t *TrackList) Top() {
+	t.Cursor = 0
+	t.Offset = 0
+}
+
+func (t *TrackList) Bottom() {
+	if t.Album == nil || len(t.Album.Tracks) == 0 {
+		return
+	}
+	t.Cursor = len(t.Album.Tracks) - 1
+	vis := t.visibleTracks()
+	t.Offset = t.Cursor - vis + 1
+	if t.Offset < 0 {
+		t.Offset = 0
+	}
+}
+
 func (t *TrackList) visibleTracks() int {
 	n := t.Height - 2 // border (2)
 	if n < 1 {

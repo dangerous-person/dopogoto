@@ -22,7 +22,6 @@ dopogoto.exe
 *.out
 
 # Tooling
-CLAUDE.md
 .claude/
 .playwright-mcp/
 

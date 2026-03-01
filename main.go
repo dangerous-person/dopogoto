@@ -9,7 +9,7 @@ import (
 	"github.com/dangerous-person/dopogoto/internal/ui"
 )
 
-var version = "dev"
+var version = "0.1.7"
 
 func main() {
 	if len(os.Args) > 1 {
