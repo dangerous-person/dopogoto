@@ -68,6 +68,24 @@ sudo mv ~/Downloads/dopogoto_0.1.8_darwin_universal/dopogoto /usr/local/bin/dopo
 
 ### Linux
 
+1. Download `dopogoto_*_linux_amd64.tar.gz` from [Releases](https://github.com/dangerous-person/dopogoto/releases)
+2. Extract and install:
+
+```sh
+tar xzf dopogoto_*_linux_amd64.tar.gz
+sudo mv dopogoto /usr/local/bin/dopogoto
+sudo chmod +x /usr/local/bin/dopogoto
+```
+
+3. Install ALSA if you don't have it (required for audio):
+   - Debian/Ubuntu: `sudo apt install libasound2-dev`
+   - Fedora: `sudo dnf install alsa-lib-devel`
+   - Arch: `sudo pacman -S alsa-lib`
+
+4. Run `dopogoto`
+
+Or use the one-liner:
+
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dangerous-person/dopogoto/main/install.sh | sh
 ```
