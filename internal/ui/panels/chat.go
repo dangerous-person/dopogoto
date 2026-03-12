@@ -117,6 +117,20 @@ func (c *Chat) ScrollDown() {
 	}
 }
 
+// ScrollToTop scrolls to the oldest messages.
+func (c *Chat) ScrollToTop() {
+	maxScroll := len(c.messages) - c.viewableLines()
+	if maxScroll < 0 {
+		maxScroll = 0
+	}
+	c.scroll = maxScroll
+}
+
+// ScrollToBottom scrolls to the latest messages.
+func (c *Chat) ScrollToBottom() {
+	c.scroll = 0
+}
+
 func (c Chat) viewableLines() int {
 	h := c.Height - 4 // border (2) + input separator (1) + input line (1)
 	if h < 1 {

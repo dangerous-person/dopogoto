@@ -43,6 +43,23 @@ func (a *AlbumList) Down() {
 	}
 }
 
+func (a *AlbumList) Top() {
+	a.Cursor = 0
+	a.Offset = 0
+}
+
+func (a *AlbumList) Bottom() {
+	if len(a.Albums) == 0 {
+		return
+	}
+	a.Cursor = len(a.Albums) - 1
+	vis := a.visibleAlbums()
+	a.Offset = a.Cursor - vis + 1
+	if a.Offset < 0 {
+		a.Offset = 0
+	}
+}
+
 // visibleAlbums returns how many albums fit in the panel.
 func (a *AlbumList) visibleAlbums() int {
 	n := a.Height - 2 // border (2)
